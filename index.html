@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>GPinheiro Hub — Propuesta Comercial 2026</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
@@ -651,12 +651,116 @@
     .stat-card .label { font-size: 15px !important; }
     #s8 .sub, #s9 .sub { font-size: 19px !important; }
 
-    /* ─── RESPONSIVE ─── */
+    /* ─── RESPONSIVE TABLET ─── */
     @media (max-width: 900px) {
       #s2 .inner, #s4 .inner, #s6 .inner { grid-template-columns: 1fr; gap: 40px; }
-      .service-grid, .steps, .reviews { grid-template-columns: 1fr; }
+      .service-grid, .steps { grid-template-columns: 1fr 1fr; }
       .steps::before { display: none; }
       #s6 .right { grid-template-columns: repeat(2, 1fr); }
+      .garantias-grid { grid-template-columns: 1fr 1fr; }
+      #s8 .inner { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    /* ─── RESPONSIVE MOBILE ─── */
+    @media (max-width: 768px) {
+      /* Slides scrolláveis verticalmente no mobile */
+      .slide {
+        height: 100svh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        justify-content: flex-start;
+        padding: 72px 0 56px;
+      }
+
+      /* Padding interno */
+      #s1 .inner, #s2 .inner, #s3 .inner, #s4 .inner,
+      #s5 .inner, #s6 .inner, #s7 .inner, #s8 .inner, #s9 .inner {
+        padding: 0 20px !important;
+        max-width: 100% !important;
+      }
+
+      /* Logo */
+      .logo { left: 16px; top: 16px; }
+      .logo svg { width: 26px; height: 26px; }
+      .logo-name { font-size: 14px; }
+
+      /* Counter */
+      .counter { right: 16px; top: 16px; font-size: 11px; }
+
+      /* Esconder setas — swipe funciona */
+      .nav-btn { display: none; }
+
+      /* Dots */
+      .dots { bottom: 14px; }
+
+      /* Watermark — ocupa espaço no mobile */
+      #s1 .watermark { display: none; }
+
+      /* ── Slide 1 ── */
+      #s1 h1 { font-size: clamp(38px, 10vw, 56px) !important; letter-spacing: -2px; }
+      #s1 .sub { font-size: 15px; max-width: 100%; }
+      #s1 .cta-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+
+      /* ── Slide 2 ── */
+      #s2 .inner { grid-template-columns: 1fr !important; gap: 24px !important; }
+      #s2 .left h2 { font-size: clamp(28px, 8vw, 40px); }
+      #s2 .stat-box .num { font-size: 36px; }
+
+      /* ── Slide 3 ── */
+      .service-grid { grid-template-columns: 1fr !important; gap: 14px; }
+      #s3 h2 { font-size: clamp(28px, 8vw, 40px); }
+      #s3 .sub { margin-bottom: 28px; }
+
+      /* ── Slide 4 ── */
+      #s4 .inner { grid-template-columns: 1fr !important; gap: 24px !important; }
+      #s4 .left h2 { font-size: clamp(28px, 8vw, 40px); }
+
+      /* ── Slide 5 ── */
+      .steps { grid-template-columns: 1fr 1fr !important; gap: 20px; }
+      #s5 h2 { font-size: clamp(28px, 8vw, 40px); }
+      #s5 .sub { margin-bottom: 28px; font-size: 15px; }
+      .step-num { width: 60px; height: 60px; font-size: 18px; margin-bottom: 16px; }
+
+      /* ── Slide 6 ── */
+      #s6 .inner { grid-template-columns: 1fr !important; gap: 24px !important; }
+      #s6 .left h2 { font-size: clamp(26px, 7vw, 36px) !important; }
+      #s6 .right { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+      .stat-card { padding: 16px 12px !important; }
+      .stat-card .num { font-size: 32px !important; }
+      .stat-card .label { font-size: 13px !important; }
+
+      /* ── Slide 7 ── */
+      .garantias-grid { grid-template-columns: 1fr !important; gap: 12px; }
+      #s7 h2 { font-size: clamp(28px, 8vw, 40px); }
+      #s7 .sub { margin-bottom: 24px; font-size: 15px; }
+
+      /* ── Slide 8 FAQ ── */
+      #s8 .inner { grid-template-columns: 1fr !important; gap: 24px !important; }
+      #s8 .left h2 { font-size: clamp(28px, 8vw, 40px) !important; }
+      .faq-list { grid-template-columns: 1fr !important; gap: 10px; }
+
+      /* ── Slide 9 CTA ── */
+      #s9 h2 { font-size: clamp(32px, 9vw, 52px) !important; letter-spacing: -2px; }
+      #s9 .sub { font-size: 15px !important; }
+      #s9 .btn-big { width: 100%; text-align: center; display: block; padding: 16px 24px; font-size: 16px; }
+      #s9 .contacts { flex-direction: column; gap: 14px; align-items: center; }
+      #s9 .logo-big { margin-top: 32px; }
+
+      /* ── Intro overlay ── */
+      #intro-overlay { padding: 0 28px; text-align: center; gap: 24px; }
+      .intro-logo { justify-content: center; }
+      .intro-question { font-size: 22px !important; }
+      .intro-btns { flex-direction: column; width: 100%; gap: 12px; }
+      .intro-btn { width: 100%; padding: 14px 24px !important; }
+
+      /* ── Music btn ── */
+      #music-btn { bottom: 16px; right: 16px; }
+    }
+
+    /* ─── MOBILE PEQUENO ─── */
+    @media (max-width: 400px) {
+      .steps { grid-template-columns: 1fr !important; }
+      #s6 .right { grid-template-columns: 1fr 1fr !important; }
     }
   </style>
 </head>
