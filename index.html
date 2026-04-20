@@ -663,6 +663,9 @@
 
     /* ─── RESPONSIVE MOBILE ─── */
     @media (max-width: 768px) {
+      /* Hide decorative bar on mobile — it causes a red line mid-scroll */
+      .bar { display: none; }
+
       /* Slides scrolláveis verticalmente no mobile */
       .slide {
         height: 100svh;
