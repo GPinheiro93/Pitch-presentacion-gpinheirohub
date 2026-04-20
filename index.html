@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPinheiro Hub — Pitch Comercial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red: #CC1111;
+      --red-dark: #990D0D;
+      --red-glow: rgba(204,17,17,0.18);
+      --bg: #090909;
+      --surface: #141414;
+      --elevated: #1E1E1E;
+      --border: #242424;
+      --text: #FFFFFF;
+      --muted: #888888;
+      --font: 'Space Grotesk', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+
+    /* ── Slide deck ── */
+    .deck {
+      width: 100%; height: 100%;
+      display: flex;
+      transition: transform 0.7s cubic-bezier(0.77, 0, 0.18, 1);
+    }
+
+    .slide {
+      min-width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-family: var(--font);
+      color: var(--text);
+    }
+
+    /* ── Shared backgrounds ── */
+    .noise {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-size: 256px 256px; opacity: 0.6;
+    }
+    .grid-bg {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 72px 72px; opacity: 0.35;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
+      filter: blur(80px);
+    }
+    .orb-red  { background: radial-gradient(circle, rgba(204,17,17,0.28) 0%, transparent 70%); }
+    .orb-dark { background: radial-gradient(circle, rgba(204,17,17,0.10) 0%, transparent 70%); }
+
+    /* ── Bottom bar ── */
+    .bar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px; z-index: 20;
+      background: linear-gradient(to right, var(--red), #660808, transparent);
+    }
+
+    /* ── Logo component ── */
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      position: absolute; top: 36px; left: 48px; z-index: 20;
+    }
+    .logo svg { width: 34px; height: 34px; }
+    .logo-name {
+      font-size: 17px; font-weight: 700; letter-spacing: -0.4px; color: #fff;
+    }
+    .logo-name em { color: var(--red); font-style: normal; }
+
+    /* ── Navigation dots ── */
+    .dots {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 100;
+    }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border); cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .dot.active { background: var(--red); transform: scale(1.4); }
+
+    /* ── Nav arrows ── */
+    .nav-btn {
+      position: fixed; top: 50%; z-index: 100;
+      transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--border); background: rgba(20,20,20,0.8);
+      color: var(--muted); font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .nav-btn:hover { border-color: var(--red); color: #fff; }
+    .nav-prev { left: 20px; }
+    .nav-next { right: 20px; }
+
+    /* ── Intro overlay ── */
+    #intro-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: #060606;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 32px;
+      transition: opacity 0.6s ease;
+    }
+    #intro-overlay.hide { opacity: 0; pointer-events: none; }
+    .intro-logo {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+    }
+    .intro-logo svg { width: 64px; height: 64px; }
+    .intro-logo span {
+      font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: #fff;
+    }
+    .intro-logo span em { color: #CC1111; font-style: normal; }
+    .intro-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+      color: #888; margin-bottom: 4px;
+    }
+    .intro-question {
+      font-size: clamp(24px, 3vw, 36px); font-weight: 700;
+      color: #fff; letter-spacing: -0.5px; text-align: center;
+    }
+    .intro-btns { display: flex; gap: 18px; }
+    .intro-btn {
+      padding: 16px 48px; border-radius: 4px; font-size: 16px;
+      font-weight: 700; cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.3px; transition: transform 0.15s, opacity 0.15s;
+      border: none;
+    }
+    .intro-btn:hover { transform: translateY(-2px); }
+    .intro-btn.yes { background: #CC1111; color: #fff; }
+    .intro-btn.no  { background: transparent; color: #888; border: 1px solid #242424; }
+    .intro-btn.no:hover { color: #fff; border-color: #555; }
+
+    /* ── Music button ── */
+    #music-btn {
+      position: fixed; bottom: 28px; right: 28px; z-index: 200;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--border); background: rgba(14,14,14,0.9);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 3px; backdrop-filter: blur(10px);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    #music-btn:hover { border-color: var(--red); }
+    #music-btn.playing {
+      border-color: var(--red);
+      box-shadow: 0 0 14px rgba(204,17,17,0.35);
+    }
+    .eq-bar {
+      width: 3px; border-radius: 2px;
+      background: var(--muted);
+      transition: background 0.25s;
+    }
+    #music-btn.playing .eq-bar { background: var(--red); }
+
+    /* barras paradas (mudo) */
+    .eq-bar:nth-child(1) { height: 8px; }
+    .eq-bar:nth-child(2) { height: 14px; }
+    .eq-bar:nth-child(3) { height: 10px; }
+    .eq-bar:nth-child(4) { height: 6px; }
+
+    /* animação das barras quando tocando */
+    @keyframes eq1 { 0%,100%{height:5px}  50%{height:16px} }
+    @keyframes eq2 { 0%,100%{height:14px} 40%{height:4px}  70%{height:18px} }
+    @keyframes eq3 { 0%,100%{height:10px} 30%{height:18px} 65%{height:4px}  }
+    @keyframes eq4 { 0%,100%{height:6px}  55%{height:14px} }
+
+    #music-btn.playing .eq-bar:nth-child(1) { animation: eq1 0.8s ease-in-out infinite; }
+    #music-btn.playing .eq-bar:nth-child(2) { animation: eq2 0.65s ease-in-out infinite; }
+    #music-btn.playing .eq-bar:nth-child(3) { animation: eq3 0.9s ease-in-out infinite; }
+    #music-btn.playing .eq-bar:nth-child(4) { animation: eq4 0.75s ease-in-out infinite; }
+
+    /* ── Slide counter ── */
+    .counter {
+      position: fixed; top: 36px; right: 48px; z-index: 100;
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 1 — PORTADA
+    ═══════════════════════════════════════════════ */
+    #s1 { background: #060606; }
+    #s1 .orb { top: -160px; left: -160px; width: 640px; height: 640px; }
+    #s1 .orb2 { bottom: -120px; right: -100px; width: 480px; height: 480px; opacity: 0.6; }
+
+    #s1 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1100px;
+    }
+    #s1 .tag {
+      font-family: var(--mono); font-size: 12px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    #s1 .tag::before {
+      content: ''; display: block; width: 28px; height: 1px; background: var(--red);
+    }
+    #s1 h1 {
+      font-size: clamp(52px, 6.5vw, 92px); font-weight: 800;
+      line-height: 1.0; letter-spacing: -3px; color: #fff;
+      margin-bottom: 12px;
+    }
+    #s1 h1 .accent { color: var(--red); }
+    #s1 .sub {
+      font-size: 18px; color: var(--muted); line-height: 1.65;
+      max-width: 480px; margin-bottom: 48px; font-weight: 400;
+    }
+    #s1 .cta-row {
+      display: flex; align-items: center; gap: 28px;
+    }
+    #s1 .btn {
+      background: var(--red); color: #fff;
+      font-family: var(--font); font-size: 15px; font-weight: 600;
+      padding: 14px 32px; border-radius: 4px; letter-spacing: 0.3px;
+      cursor: pointer; border: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #s1 .btn:hover { background: #e01414; transform: translateY(-1px); }
+    #s1 .link {
+      font-size: 14px; color: var(--muted); letter-spacing: 0.3px;
+    }
+    #s1 .link em { color: #fff; font-style: normal; }
+
+    /* Big logo watermark */
+    #s1 .watermark {
+      position: absolute; right: 6vw; top: 50%; transform: translateY(-50%);
+      z-index: 5; opacity: 0.06;
+    }
+    #s1 .watermark svg { width: 360px; height: 360px; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 2 — PROBLEMA
+    ═══════════════════════════════════════════════ */
+    #s2 { background: var(--bg); }
+    #s2 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    #s2 .left .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 20px;
+    }
+    #s2 .left h2 {
+      font-size: clamp(32px, 3.5vw, 52px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -1.5px;
+    }
+    #s2 .left h2 em { color: var(--red); font-style: normal; }
+    #s2 .left p {
+      font-size: 16px; color: var(--muted); line-height: 1.7; margin-top: 20px;
+    }
+    #s2 .stat-box {
+      margin-top: 36px; padding: 20px 24px;
+      border: 1px solid var(--border); border-left: 3px solid var(--red);
+      background: var(--surface);
+    }
+    #s2 .stat-box .num {
+      font-size: 44px; font-weight: 800; color: var(--red); letter-spacing: -2px;
+    }
+    #s2 .stat-box .desc {
+      font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5;
+    }
+    #s2 .right {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .prob-card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 22px 24px; border-radius: 8px;
+      transition: border-color 0.2s;
+    }
+    .prob-card:hover { border-color: var(--red); }
+    .prob-card .num {
+      font-family: var(--mono); font-size: 11px; color: var(--red);
+      letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .prob-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .prob-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 3 — SERVICIOS
+    ═══════════════════════════════════════════════ */
+    #s3 { background: var(--bg); }
+    #s3 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%;
+      text-align: center;
+    }
+    #s3 .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s3 h2 {
+      font-size: clamp(36px, 4vw, 58px); font-weight: 800;
+      letter-spacing: -1.5px; margin-bottom: 12px;
+    }
+    #s3 .sub {
+      font-size: 16px; color: var(--muted); margin-bottom: 56px; max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .service-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .srv {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 28px; text-align: left;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .srv::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--red); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .srv:hover { border-color: var(--border); transform: translateY(-4px); }
+    .srv:hover::after { transform: scaleX(1); }
+    .srv-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--red-glow); border: 1px solid rgba(204,17,17,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .srv-icon svg { width: 22px; height: 22px; }
+    .srv .idx {
+      font-family: var(--mono); font-size: 11px; color: var(--red);
+      letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .srv h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+    .srv p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+    .srv ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .srv ul li {
+      font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px;
+    }
+    .srv ul li::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 4 — ENTREGAS
+    ═══════════════════════════════════════════════ */
+    #s4 { background: var(--bg); }
+    #s4 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    #s4 .left .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s4 .left h2 {
+      font-size: clamp(32px, 3.5vw, 52px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 16px;
+    }
+    #s4 .left h2 em { color: var(--red); font-style: normal; }
+    #s4 .left p { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 32px; }
+    .feat-list { display: flex; flex-direction: column; gap: 12px; }
+    .feat {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+    }
+    .feat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .feat span { font-size: 14px; font-weight: 500; }
+    #s4 .right {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .tech-badge {
+      padding: 16px 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .tech-badge .label { font-size: 13px; color: var(--muted); }
+    .tech-badge .bar-wrap {
+      flex: 1; height: 4px; background: var(--elevated); border-radius: 2px;
+      margin: 0 16px; overflow: hidden;
+    }
+    .tech-badge .bar-fill {
+      height: 100%; background: var(--red); border-radius: 2px;
+      transition: width 0.8s ease;
+    }
+    .tech-badge .val { font-family: var(--mono); font-size: 12px; color: var(--red); font-weight: 600; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 5 — PROCESO
+    ═══════════════════════════════════════════════ */
+    #s5 { background: var(--bg); }
+    #s5 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%; text-align: center;
+    }
+    #s5 .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s5 h2 {
+      font-size: clamp(34px, 4vw, 56px); font-weight: 800;
+      letter-spacing: -1.5px; margin-bottom: 10px;
+    }
+    #s5 .sub { font-size: 16px; color: var(--muted); margin-bottom: 56px; }
+    .steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      position: relative;
+    }
+    .steps::before {
+      content: ''; position: absolute; top: 40px; left: 12.5%; right: 12.5%;
+      height: 1px; background: linear-gradient(to right, var(--red), var(--border), var(--border), var(--red));
+      z-index: 0;
+    }
+    .step { text-align: center; padding: 0 20px; position: relative; z-index: 1; }
+    .step-num {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: var(--red);
+      font-family: var(--mono);
+    }
+    .step:hover .step-num {
+      background: var(--red-glow); border-color: var(--red);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .step p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .step .time {
+      margin-top: 14px; font-family: var(--mono); font-size: 11px;
+      color: var(--red); letter-spacing: 1.5px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 6 — SOBRE NOSOTROS
+    ═══════════════════════════════════════════════ */
+    #s6 { background: var(--bg); }
+    #s6 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    #s6 .left .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s6 .left h2 {
+      font-size: clamp(28px, 3vw, 44px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 12px;
+    }
+    #s6 .left h2 em { color: var(--red); font-style: normal; }
+    #s6 .left p {
+      font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 10px;
+    }
+    #s6 .values { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .val-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 14px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+    }
+    .val-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-top: 6px; flex-shrink: 0; }
+    .val-item div { font-size: 14px; }
+    .val-item strong { display: block; font-weight: 600; margin-bottom: 2px; }
+    .val-item span { color: var(--muted); font-size: 13px; }
+    #s6 .right { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 24px; text-align: center;
+    }
+    .stat-card .num {
+      font-size: 44px; font-weight: 800; color: var(--red); letter-spacing: -2px;
+      line-height: 1;
+    }
+    .stat-card .label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .stat-card.big { grid-column: 1 / -1; }
+    .stat-card.big .num { font-size: 56px; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 7 — GARANTÍAS
+    ═══════════════════════════════════════════════ */
+    #s7 { background: var(--bg); }
+    #s7 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%; text-align: center;
+    }
+    #s7 .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s7 h2 {
+      font-size: clamp(32px, 4vw, 52px); font-weight: 800;
+      letter-spacing: -1.5px; margin-bottom: 10px;
+    }
+    #s7 .sub { font-size: 16px; color: var(--muted); margin-bottom: 44px; }
+    .garantias-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .garantia {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px 22px; text-align: left;
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+    .garantia:hover { border-color: var(--red); }
+    .garantia-check {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: var(--red-glow); border: 1px solid rgba(204,17,17,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--red); font-weight: 800;
+    }
+    .garantia h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .garantia p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 8 — FAQ
+    ═══════════════════════════════════════════════ */
+    #s8 { background: var(--bg); }
+    #s8 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 1200px; width: 100%;
+      display: grid; grid-template-columns: 320px 1fr; gap: 72px; align-items: center;
+    }
+    #s8 .left .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 16px;
+    }
+    #s8 .left h2 {
+      font-size: clamp(32px, 3.5vw, 52px); font-weight: 800;
+      line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 16px;
+    }
+    #s8 .left h2 em { color: var(--red); font-style: normal; }
+    #s8 .left p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+    .faq-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .faq-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+      transition: border-color 0.2s;
+    }
+    .faq-item:hover { border-color: var(--red); }
+    .faq-q {
+      font-size: 14px; font-weight: 700; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .faq-q::before {
+      content: '?'; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--red-glow); border: 1px solid rgba(204,17,17,0.25);
+      color: var(--red); font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .faq-a { font-size: 13px; color: var(--muted); line-height: 1.6; padding-left: 32px; }
+
+    /* ═══════════════════════════════════════════════
+       SLIDE 9 — CTA
+    ═══════════════════════════════════════════════ */
+    #s9 { background: #060606; text-align: center; }
+    #s9 .orb { top: -200px; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; }
+    #s9 .inner {
+      position: relative; z-index: 10;
+      padding: 0 10vw; max-width: 900px; width: 100%;
+      margin: 0 auto;
+    }
+    #s9 .tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    #s9 .tag::before, #s9 .tag::after {
+      content: ''; display: block; flex: 1; max-width: 48px; height: 1px; background: var(--border);
+    }
+    #s9 h2 {
+      font-size: clamp(42px, 5.5vw, 80px); font-weight: 800;
+      line-height: 1.0; letter-spacing: -3px; margin-bottom: 20px;
+    }
+    #s9 h2 em { color: var(--red); font-style: normal; }
+    #s9 .sub {
+      font-size: 17px; color: var(--muted); line-height: 1.7; max-width: 520px;
+      margin: 0 auto 48px;
+    }
+    #s9 .cta-group { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    #s9 .btn-big {
+      background: var(--red); color: #fff; border: none;
+      font-family: var(--font); font-size: 17px; font-weight: 700;
+      padding: 18px 48px; border-radius: 4px; cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    #s9 .btn-big:hover { background: #e01414; transform: scale(1.03); }
+    #s9 .contacts {
+      display: flex; gap: 40px; align-items: center;
+    }
+    #s9 .contact-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    #s9 .contact-item:hover { color: #fff; }
+    #s9 .contact-item svg { width: 16px; height: 16px; color: var(--red); flex-shrink: 0; }
+    #s9 .contact-item em { color: #fff; font-style: normal; }
+    #s9 .btn-big {
+      display: inline-block; text-decoration: none;
+    }
+    #s9 .logo-big {
+      margin-top: 56px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+    }
+    #s9 .logo-big svg { width: 48px; height: 48px; }
+    #s9 .logo-big .name {
+      font-size: 24px; font-weight: 800; letter-spacing: -0.8px;
+    }
+    #s9 .logo-big .name em { color: var(--red); font-style: normal; }
+
+    /* ── Rain Canvas (todos os slides) ── */
+    #rain-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    .slide { background: transparent !important; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      #s2 .inner, #s4 .inner, #s6 .inner { grid-template-columns: 1fr; gap: 40px; }
+      .service-grid, .steps, .reviews { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      #s6 .right { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── INTRO OVERLAY ─── -->
+<div id="intro-overlay">
+  <div class="intro-logo">
+    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+    </svg>
+    <span>G<em>P</em>inheiro Hub</span>
+  </div>
+  <div class="intro-label">Propuesta Comercial · 2026</div>
+  <div class="intro-question">¿Deseas ver la presentación<br>con música?</div>
+  <div class="intro-btns">
+    <button class="intro-btn yes" id="intro-yes">♪ Sí, con música</button>
+    <button class="intro-btn no"  id="intro-no">Continuar sin música</button>
+  </div>
+</div>
+
+<!-- ─── MUSIC ─── -->
+<button id="music-btn" title="Música">
+  <span class="eq-bar"></span>
+  <span class="eq-bar"></span>
+  <span class="eq-bar"></span>
+  <span class="eq-bar"></span>
+</button>
+
+<!-- ─── NAV ─── -->
+<button class="nav-btn nav-prev" onclick="move(-1)">‹</button>
+<button class="nav-btn nav-next" onclick="move(1)">›</button>
+<div class="counter"><span id="cur">1</span> / 9</div>
+<div class="dots" id="dots"></div>
+
+<!-- ─── DECK ─── -->
+<div class="deck" id="deck">
+
+  <!-- ════ SLIDE 1 — PORTADA ════ -->
+  <section class="slide" id="s1">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="top:-160px;left:-160px;width:640px;height:640px;"></div>
+    <div class="orb orb-dark" style="bottom:-120px;right:-100px;width:480px;height:480px;"></div>
+
+    <!-- Logo top-left -->
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <!-- Watermark -->
+    <div class="watermark">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="6.5" fill="#FFFFFF"/>
+      </svg>
+    </div>
+
+    <div class="inner">
+      <div class="tag">Propuesta Comercial · 2026</div>
+      <h1>
+        Cada día <span class="accent">offline</span><br>es dinero<br>perdido.
+      </h1>
+      <p class="sub">Transformamos tu presencia digital en resultados reales — sitios web, automatización con IA y estrategia de datos.</p>
+      <div class="cta-row">
+        <button class="btn" onclick="move(1)">Ver propuesta →</button>
+        <span class="link"><em>gpinheirohub.com</em></span>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 2 — EL PROBLEMA ════ -->
+  <section class="slide" id="s2">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="top:-100px;right:-80px;width:400px;height:400px;opacity:0.5;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="left">
+        <div class="tag">01 — El Problema</div>
+        <h2>Tu marca existe.<br>Pero el mercado<br><em>digital no lo sabe.</em></h2>
+        <p>Miles de negocios pierden clientes cada día por falta de presencia digital estratégica. No basta existir — necesitas ser encontrado, generar confianza y ser elegido.</p>
+        <div class="stat-box">
+          <div class="num">73%</div>
+          <div class="desc">de las PyMEs pierden clientes por baja<br>presencia y credibilidad digital</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="prob-card">
+          <div class="num">01 ·</div>
+          <h3>Visibilidad fragmentada</h3>
+          <p>Una presencia online sin estrategia no convierte — solo ocupa espacio y no genera retorno.</p>
+        </div>
+        <div class="prob-card">
+          <div class="num">02 ·</div>
+          <h3>Procesos manuales frenan el crecimiento</h3>
+          <p>Las tareas repetitivas consumen tiempo que debería estar enfocado en el producto y el cliente.</p>
+        </div>
+        <div class="prob-card">
+          <div class="num">03 ·</div>
+          <h3>Los datos existen, pero no guían</h3>
+          <p>Sin inteligencia de datos, la estrategia se vuelve adivinanza. Pierdes oportunidades visibles en los números.</p>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 3 — SERVICIOS ════ -->
+  <section class="slide" id="s3">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="bottom:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;opacity:0.4;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="tag">02 — La Solución</div>
+      <h2>Nuestros Servicios</h2>
+      <p class="sub">Todo lo que tu empresa necesita para crecer en digital — en un solo lugar.</p>
+
+      <div class="service-grid">
+        <div class="srv">
+          <div class="srv-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#CC1111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+            </svg>
+          </div>
+          <div class="idx">01 · Visibilidad</div>
+          <h3>Sitios Web Profesionales</h3>
+          <p>Sitios rápidos, modernos y optimizados para convertir visitantes en clientes reales.</p>
+          <ul>
+            <li>Landing pages de alta conversión</li>
+            <li>SEO y rendimiento optimizados</li>
+            <li>Diseño responsivo y moderno</li>
+            <li>Integración con analytics</li>
+          </ul>
+        </div>
+        <div class="srv">
+          <div class="srv-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#CC1111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+              <path d="M8 12h8M12 8v8"/>
+            </svg>
+          </div>
+          <div class="idx">02 · Automatización</div>
+          <h3>Automatización & Chatbots</h3>
+          <p>Chatbots con IA y flujos automáticos que atienden, califican y venden 24h al día.</p>
+          <ul>
+            <li>Chatbot en WhatsApp con IA</li>
+            <li>Automatización de atención al cliente</li>
+            <li>Integración con CRM</li>
+            <li>Agentes de IA autónomos</li>
+          </ul>
+        </div>
+        <div class="srv">
+          <div class="srv-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#CC1111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div class="idx">03 · Identidad</div>
+          <h3>Diseño & Marca</h3>
+          <p>Identidad visual estratégica que comunica quién eres antes de decir una sola palabra.</p>
+          <ul>
+            <li>Branding e identidad visual</li>
+            <li>Logotipo profesional</li>
+            <li>Brand guide completo</li>
+            <li>Social media & contenido</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 4 — RESULTADOS ════ -->
+  <section class="slide" id="s4">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="bottom:-100px;left:-100px;width:500px;height:500px;opacity:0.45;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="left">
+        <div class="tag">03 — Resultados</div>
+        <h2>Sitios que<br><em>realmente venden.</em></h2>
+        <p>No construimos sitios bonitos. Construimos sistemas de adquisición digital que transforman visitantes en clientes pagadores.</p>
+        <div class="feat-list">
+          <div class="feat"><div class="feat-dot"></div><span>Velocidad de carga &lt; 2 segundos</span></div>
+          <div class="feat"><div class="feat-dot"></div><span>Optimizado para Google (SEO técnico)</span></div>
+          <div class="feat"><div class="feat-dot"></div><span>Integrado con WhatsApp y CRM</span></div>
+          <div class="feat"><div class="feat-dot"></div><span>Analytics y tracking de conversión</span></div>
+          <div class="feat"><div class="feat-dot"></div><span>Diseño mobile-first responsivo</span></div>
+        </div>
+      </div>
+      <div class="right">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 24px;margin-bottom:16px;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:2px;margin-bottom:16px;">RENDIMIENTO PROMEDIO DE NUESTROS PROYECTOS</div>
+          <div class="tech-badge" style="background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:12px 0;margin-bottom:0;">
+            <span class="label">Aumento en leads</span>
+            <div class="bar-wrap"><div class="bar-fill" style="width:87%"></div></div>
+            <span class="val">+87%</span>
+          </div>
+          <div class="tech-badge" style="background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:12px 0;">
+            <span class="label">Tasa de conversión</span>
+            <div class="bar-wrap"><div class="bar-fill" style="width:65%"></div></div>
+            <span class="val">+65%</span>
+          </div>
+          <div class="tech-badge" style="background:transparent;border:none;padding:12px 0 0;">
+            <span class="label">Tiempo ahorrado (IA)</span>
+            <div class="bar-wrap"><div class="bar-fill" style="width:90%"></div></div>
+            <span class="val">-90%</span>
+          </div>
+        </div>
+        <div style="background:var(--red);border-radius:12px;padding:24px;text-align:center;">
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:8px;">Tiempo promedio de entrega</div>
+          <div style="font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1;">7–14</div>
+          <div style="font-size:16px;font-weight:500;color:rgba(255,255,255,0.85);">días hábiles</div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 5 — CÓMO TRABAJAMOS ════ -->
+  <section class="slide" id="s5">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="tag">04 — Proceso</div>
+      <h2>Cómo Trabajamos</h2>
+      <p class="sub">Proceso claro, plazos definidos y tú actualizado en cada etapa.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Briefing</h3>
+          <p>Entendemos tu negocio, objetivos y público antes de cualquier línea de código.</p>
+          <div class="time">1–2 días</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Planificación</h3>
+          <p>Mapeamos estructura, flujos y estrategia de conversión para tu proyecto.</p>
+          <div class="time">2–3 días</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Desarrollo</h3>
+          <p>Construcción del proyecto con revisiones colaborativas en tiempo real.</p>
+          <div class="time">5–10 días</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <h3>Entrega & Soporte</h3>
+          <p>Publicación, capacitación y seguimiento post-entrega incluido.</p>
+          <div class="time">Continuo</div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 6 — SOBRE NOSOTROS ════ -->
+  <section class="slide" id="s6">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="top:-120px;right:-80px;width:420px;height:420px;opacity:0.4;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="left">
+        <div class="tag">05 — Sobre Nosotros</div>
+        <h2>Somos socios<br>de <em>crecimiento</em>,<br>no proveedores.</h2>
+        <p>GPinheiro Hub nació con un objetivo claro: ayudar a empresas a crecer en digital con tecnología inteligente, diseño estratégico y resultados medibles.</p>
+        <p>No entregamos solo proyectos. Entregamos crecimiento.</p>
+        <div class="values">
+          <div class="val-item">
+            <div class="val-dot"></div>
+            <div><strong>Entregas a Tiempo</strong><span>Proyectos entregados en el plazo acordado, sin sorpresas.</span></div>
+          </div>
+          <div class="val-item">
+            <div class="val-dot"></div>
+            <div><strong>Precios Transparentes</strong><span>Sin costos ocultos ni tarifas absurdas. Solo valor real.</span></div>
+          </div>
+          <div class="val-item">
+            <div class="val-dot"></div>
+            <div><strong>Soporte Post-Entrega</strong><span>Acompañamiento 24h después de cada proyecto entregado.</span></div>
+          </div>
+          <div class="val-item">
+            <div class="val-dot"></div>
+            <div><strong>Sin Templates</strong><span>Soluciones 100% personalizadas, construidas desde cero para tu negocio.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="stat-card">
+          <div class="num">50+</div>
+          <div class="label">Proyectos entregados</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">100%</div>
+          <div class="label">Satisfacción de clientes</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">3</div>
+          <div class="label">Pilares de servicio</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">24h</div>
+          <div class="label">Soporte disponible</div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 7 — GARANTÍAS ════ -->
+  <section class="slide" id="s7">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="bottom:-180px;left:50%;transform:translateX(-50%);width:560px;height:560px;opacity:0.3;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="tag">06 — Garantías</div>
+      <h2>Tu inversión,<br><em>protegida.</em></h2>
+      <p class="sub">Compromisos reales que asumimos en cada proyecto.</p>
+
+      <div class="garantias-grid">
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>Entrega a Tiempo</h3>
+            <p>Si no cumplimos el plazo acordado, te devolvemos el 50% del valor.</p>
+          </div>
+        </div>
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>Revisiones Ilimitadas</h3>
+            <p>Ajustamos el proyecto hasta que estés 100% satisfecho con el resultado.</p>
+          </div>
+        </div>
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>Sin Costos Ocultos</h3>
+            <p>El precio acordado es el precio final. Sin sorpresas ni cargos extras.</p>
+          </div>
+        </div>
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>Soporte Post-Entrega</h3>
+            <p>Acompañamiento incluido después de cada entrega. No te dejamos solo.</p>
+          </div>
+        </div>
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>100% Personalizado</h3>
+            <p>Sin templates. Todo construido desde cero para tu negocio específico.</p>
+          </div>
+        </div>
+        <div class="garantia">
+          <div class="garantia-check">✓</div>
+          <div>
+            <h3>Resultado o No Cobro</h3>
+            <p>Si el proyecto no cumple lo acordado, no cobramos el saldo restante.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 8 — FAQ ════ -->
+  <section class="slide" id="s8">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="top:-120px;right:-80px;width:420px;height:420px;opacity:0.4;"></div>
+
+    <div class="logo">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+      </svg>
+      <span class="logo-name">G<em>P</em>inheiro Hub</span>
+    </div>
+
+    <div class="inner" style="margin:0 auto;">
+      <div class="left">
+        <div class="tag">07 — FAQ</div>
+        <h2>Preguntas<br><em>frecuentes.</em></h2>
+        <p>Las dudas más comunes antes de empezar un proyecto con nosotros.</p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q">¿Cuánto cuesta un proyecto?</div>
+          <div class="faq-a">Depende del alcance. Agenda una llamada gratuita de 30 min y te damos un presupuesto claro sin compromiso.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">¿Cuánto tiempo tarda en estar listo?</div>
+          <div class="faq-a">Entre 7 y 21 días hábiles según la complejidad. Siempre con fecha de entrega definida desde el inicio.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">¿Y si no me gusta el resultado?</div>
+          <div class="faq-a">Trabajamos con revisiones ilimitadas. Si el resultado final no cumple lo acordado, no cobramos el saldo.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">¿Necesito conocimientos técnicos?</div>
+          <div class="faq-a">Para nada. Nos encargamos de todo y te entregamos algo que puedes gestionar fácilmente sin saber programar.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+  <!-- ════ SLIDE 9 — CTA ════ -->
+  <section class="slide" id="s9">
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-red" style="top:-200px;left:50%;transform:translateX(-50%);width:700px;height:700px;"></div>
+
+    <div class="inner">
+      <div class="tag">Próximo Paso</div>
+      <h2>Construyamos esto<br><em>juntos.</em></h2>
+      <p class="sub">Agenda una conversación de 30 minutos sin compromiso. Solo claridad sobre cómo podemos acelerar tu crecimiento digital.</p>
+
+      <div class="cta-group">
+        <a href="https://wa.me/5561995095098?text=Hola%20Gustavo%2C%20vi%20tu%20presentaci%C3%B3n%20y%20quiero%20hablar%20sobre%20mi%20proyecto" target="_blank" class="btn-big">Quiero mi Proyecto →</a>
+        <div class="contacts">
+          <a href="https://www.gpinheirohub.com" target="_blank" class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <em>gpinheirohub.com</em>
+          </a>
+          <a href="https://wa.me/5561995095098" target="_blank" class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+            <em>+55 61 99509-5098</em>
+          </a>
+        </div>
+      </div>
+
+      <div class="logo-big">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+        </svg>
+        <div class="name">G<em>P</em>inheiro Hub</div>
+      </div>
+    </div>
+    <div class="bar"></div>
+  </section>
+
+</div><!-- /deck -->
+
+<script>
+  const TOTAL = 9;
+  let cur = 0;
+
+  const deck = document.getElementById('deck');
+  const curEl = document.getElementById('cur');
+  const dotsEl = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    cur = Math.max(0, Math.min(TOTAL - 1, n));
+    deck.style.transform = `translateX(-${cur * 100}vw)`;
+    curEl.textContent = cur + 1;
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === cur);
+    });
+  }
+
+  function move(dir) { goTo(cur + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') move(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') move(-1);
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = tx - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) move(dx > 0 ? 1 : -1);
+  });
+
+  // ═══════════════════════════════════════════════
+  // MÚSICA — HTML5 Audio local
+  // ═══════════════════════════════════════════════
+  (function() {
+    const btn     = document.getElementById('music-btn');
+    const overlay = document.getElementById('intro-overlay');
+    const audio   = new Audio('Naughty Boy, Sam Smith - La La La (Lyrics).mp3');
+    audio.loop    = true;
+    audio.volume  = 0.35;
+    let playing   = false;
+
+    function dismissOverlay() {
+      overlay.classList.add('hide');
+      setTimeout(() => overlay.remove(), 650);
+    }
+
+    document.getElementById('intro-yes').addEventListener('click', () => {
+      audio.play();
+      playing = true;
+      btn.classList.add('playing');
+      dismissOverlay();
+    });
+
+    document.getElementById('intro-no').addEventListener('click', dismissOverlay);
+
+    btn.addEventListener('click', () => {
+      if (!playing) {
+        audio.play();
+        btn.classList.add('playing');
+      } else {
+        audio.pause();
+        btn.classList.remove('playing');
+      }
+      playing = !playing;
+    });
+  })();
+
+  // ═══════════════════════════════════════════════
+  // RAINING LETTERS — todos os slides (canvas fixo)
+  // ═══════════════════════════════════════════════
+  (function() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'rain-canvas';
+    document.body.insertBefore(canvas, document.body.firstChild);
+    const ctx = canvas.getContext('2d');
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&[]{}';
+    const FS = 14;
+    let cols, drops;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      cols  = Math.floor(canvas.width / FS);
+      drops = Array.from({length: cols}, () => Math.floor(Math.random() * -(canvas.height / FS)));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function tick() {
+      ctx.fillStyle = 'rgba(9,9,9,0.06)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = FS + 'px monospace';
+      for (let i = 0; i < cols; i++) {
+        const ch     = CHARS[Math.floor(Math.random() * CHARS.length)];
+        const bright = Math.random() > 0.97;
+        if (bright) {
+          ctx.fillStyle   = 'rgba(204,17,17,0.9)';
+          ctx.shadowColor = '#CC1111';
+          ctx.shadowBlur  = 8;
+        } else {
+          ctx.fillStyle = 'rgba(100,15,15,0.35)';
+          ctx.shadowBlur = 0;
+        }
+        ctx.fillText(ch, i * FS, drops[i] * FS);
+        ctx.shadowBlur = 0;
+        if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i] += 0.38;
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+</script>
+</body>
+</html>
