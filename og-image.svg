@@ -1,0 +1,42 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#090909"/>
+  <!-- Grid pattern -->
+  <defs>
+    <pattern id="grid" width="72" height="72" patternUnits="userSpaceOnUse">
+      <path d="M 72 0 L 0 0 0 72" fill="none" stroke="#242424" stroke-width="0.8"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.4"/>
+  <!-- Red glow -->
+  <ellipse cx="200" cy="150" rx="320" ry="280" fill="#CC1111" opacity="0.08"/>
+  <ellipse cx="1050" cy="520" rx="260" ry="220" fill="#CC1111" opacity="0.06"/>
+  <!-- Bottom bar -->
+  <rect x="0" y="627" width="600" height="3" fill="url(#bar)"/>
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="600" y2="0">
+      <stop offset="0%" stop-color="#CC1111"/>
+      <stop offset="70%" stop-color="#660808"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+  <!-- Logo mark -->
+  <g transform="translate(100, 215) scale(1.0)">
+    <path d="M58,44 L20,100 L58,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M142,44 L180,100 L142,156" stroke="#CC1111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M117,81 A26,26 0 1,0 117,119 L117,104 L92,104" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="92" cy="104" r="7" fill="#FFFFFF"/>
+  </g>
+  <!-- GPinheiro Hub text -->
+  <text x="320" y="285" font-family="Arial, sans-serif" font-size="72" font-weight="800" fill="white" letter-spacing="-2">G</text>
+  <text x="357" y="285" font-family="Arial, sans-serif" font-size="72" font-weight="800" fill="#CC1111" letter-spacing="-2">P</text>
+  <text x="396" y="285" font-family="Arial, sans-serif" font-size="72" font-weight="800" fill="white" letter-spacing="-2">inheiro Hub</text>
+  <!-- Tagline -->
+  <text x="320" y="340" font-family="Arial, sans-serif" font-size="26" fill="#888888" letter-spacing="1">Propuesta Comercial · 2026</text>
+  <!-- Divider -->
+  <rect x="320" y="368" width="560" height="1" fill="#242424"/>
+  <!-- Description -->
+  <text x="320" y="408" font-family="Arial, sans-serif" font-size="22" fill="#cccccc">Sitios web · Automatización con IA · Diseño &amp; Marca</text>
+  <!-- URL -->
+  <text x="320" y="460" font-family="Arial, sans-serif" font-size="18" fill="#CC1111">pitch.gpinheirohub.com</text>
+</svg>
