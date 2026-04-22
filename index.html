@@ -1377,6 +1377,16 @@
       }
       playing = !playing;
     });
+
+    document.querySelectorAll('a[target="_blank"]').forEach(link => {
+      link.addEventListener('click', () => {
+        if (playing) {
+          audio.pause();
+          btn.classList.remove('playing');
+          playing = false;
+        }
+      });
+    });
   })();
 
   // ═══════════════════════════════════════════════
